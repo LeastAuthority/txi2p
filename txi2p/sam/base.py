@@ -1,6 +1,7 @@
 # Copyright (c) str4d <str4d@mail.i2p>
 # See COPYING for details.
 
+from builtins import *
 from twisted.internet.interfaces import IListeningPort, IProtocolFactory
 from twisted.internet.protocol import ClientFactory
 from twisted.python.failure import Failure

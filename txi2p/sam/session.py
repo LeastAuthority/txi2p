@@ -1,6 +1,7 @@
 # Copyright (c) str4d <str4d@mail.i2p>
 # See COPYING for details.
 
+from builtins import *
 import os
 from parsley import makeProtocol
 from twisted.internet import defer, error
@@ -95,7 +96,7 @@ class SessionCreateFactory(SAMFactory):
         try:
             proto.sender.transport.setTcpKeepAlive(1)
         except AttributeError as e:
-            print e
+            log.msg(e)
         # Now continue on with creation of SAMSession
         self.deferred.callback((self.samVersion, self.style, self.nickname, proto, pubKey))
 
@@ -176,13 +177,14 @@ def getSession(nickname, samEndpoint=None, autoClose=False, **kwargs):
         autoClose (bool): `true` if the session should close automatically once
             no more connections are using it.
     """
-    if _sessions.has_key(nickname):
+    if nickname in _sessions:
         return defer.succeed(_sessions[nickname])
 
     if not samEndpoint:
         raise ValueError('A new session cannot be created without an API Endpoint')
 
-    def createSession((samVersion, style, id, proto, pubKey)):
+    def createSession(vals):
+        samVersion, style, id, proto, pubKey = vals
         s = SAMSession()
         s.nickname = nickname
         s.samEndpoint = samEndpoint

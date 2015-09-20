@@ -1,6 +1,7 @@
 # Copyright (c) str4d <str4d@mail.i2p>
 # See COPYING for details.
 
+from builtins import *
 from twisted.internet import interfaces
 from twisted.python.versions import Version
 from twisted.test.proto_helpers import MemoryReactor

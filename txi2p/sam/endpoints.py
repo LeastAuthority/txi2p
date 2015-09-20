@@ -1,6 +1,7 @@
 # Copyright (c) str4d <str4d@mail.i2p>
 # See COPYING for details.
 
+from builtins import *
 from twisted.internet import defer, error, interfaces
 from twisted.internet.endpoints import serverFromString
 from zope.interface import implementer
@@ -184,7 +185,8 @@ class SAMI2PStreamServerEndpoint(object):
                 d2.addCallback(lambda forwardingProto: (port, forwardingProto))
                 return d2
 
-            def handlePort((port, forwardingProto)):
+            def handlePort(vals):
+                port, forwardingProto = vals
                 return I2PListeningPort(port, forwardingProto, self._session.address)
 
             d.addCallback(setupForward)

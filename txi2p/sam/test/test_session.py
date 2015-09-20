@@ -1,6 +1,7 @@
 # Copyright (c) str4d <str4d@mail.i2p>
 # See COPYING for details.
 
+from builtins import *
 from mock import Mock
 import os
 import twisted
@@ -176,7 +177,7 @@ class TestSAMSession(unittest.TestCase):
         self.s.addStream('baz')
         self.s.removeStream('bar')
         self.assertEqual(['baz'], self.s._streams)
-        self.assertEqual(True, session._sessions.has_key('foo'))
+        self.assertEqual(True, 'foo' in session._sessions)
         self.assertEqual(self.s, session._sessions['foo'])
         self.s.removeStream('baz')
         self.assertEqual([], self.s._streams)
@@ -187,7 +188,7 @@ class TestSAMSession(unittest.TestCase):
         self.s.addStream('baz')
         self.s.removeStream('bar')
         self.assertEqual(['baz'], self.s._streams)
-        self.assertEqual(True, session._sessions.has_key('foo'))
+        self.assertEqual(True, 'foo' in session._sessions)
         self.assertEqual(self.s, session._sessions['foo'])
         self.s.removeStream('baz')
         self.assertEqual([], self.s._streams)
