@@ -88,7 +88,7 @@ class SessionCreateFactory(SAMFactory):
         if self._writeKeypair:
             try:
                 f = open(self._keyfile, 'w')
-                f.write(self.privKey)
+                f.write(str(self.privKey))
                 f.close()
             except IOError:
                 log.msg('Could not save private key to %s' % self._keyfile)
@@ -241,7 +241,7 @@ class DestGenerateFactory(SAMFactory):
 
         try:
             f = open(self._keyfile, 'w')
-            f.write(privKey)
+            f.write(str(privKey))
             f.close()
             self.deferred.callback(I2PAddress(pubKey))
         except IOError as e:

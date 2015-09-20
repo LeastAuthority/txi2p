@@ -113,7 +113,7 @@ class TestSessionCreateFactory(SAMFactoryTestMixin, unittest.TestCase):
     def test_startFactoryWithExistingKeyfile(self):
         tmp = '/tmp/TestSessionCreateFactory.privKey'
         f = open(tmp, 'w')
-        f.write('foo')
+        f.write(u'foo')
         f.close()
         fac, proto = self.makeProto('foo', keyfile=tmp)
         fac.doStart()
@@ -301,7 +301,7 @@ class TestDestGenerateFactory(SAMFactoryTestMixin, unittest.TestCase):
     def test_destGenerated_keyfileExists(self):
         tmp = '/tmp/TestDestGenerateFactory.privKey'
         f = open(tmp, 'w')
-        f.write('foo')
+        f.write(u'foo')
         f.close()
         mreactor = proto_helpers.MemoryReactor()
         fac, proto = self.makeProto(tmp)
