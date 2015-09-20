@@ -30,7 +30,7 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         proto.transport.clear()
         proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
-            'SESSION CREATE STYLE=STREAM ID=foo DESTINATION=TRANSIENT\n',
+            b'SESSION CREATE STYLE=STREAM ID=foo DESTINATION=TRANSIENT\n',
             proto.transport.value())
 
     def test_sessionCreateWithAutoNickAfterHello(self):
@@ -41,7 +41,7 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
             'SESSION CREATE STYLE=STREAM ID=txi2p-%s DESTINATION=TRANSIENT\n' % os.getpid(),
-            proto.transport.value())
+            proto.transport.value().decode('utf-8'))
 
     def test_sessionCreateWithOptionsAfterHello(self):
         fac, proto = self.makeProto()
@@ -50,7 +50,7 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         proto.transport.clear()
         proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
-            'SESSION CREATE STYLE=STREAM ID=foo DESTINATION=TRANSIENT bar=baz\n',
+            b'SESSION CREATE STYLE=STREAM ID=foo DESTINATION=TRANSIENT bar=baz\n',
             proto.transport.value())
 
     def test_sessionCreateReturnsError(self):
@@ -70,7 +70,7 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         proto.transport.clear()
         proto.dataReceived('SESSION STATUS RESULT=OK DESTINATION=%s\n' % TEST_B64)
         self.assertEquals(
-            'NAMING LOOKUP NAME=ME\n',
+            b'NAMING LOOKUP NAME=ME\n',
             proto.transport.value())
 
     def test_sessionCreatedAfterNamingLookup(self):
@@ -255,7 +255,7 @@ class TestDestGenerateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac, proto = self.makeProto()
         proto.transport.clear()
         proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
-        self.assertEquals('DEST GENERATE\n', proto.transport.value())
+        self.assertEquals(b'DEST GENERATE\n', proto.transport.value())
 
     def test_destGenerated(self):
         fac, proto = self.makeProto()

@@ -18,7 +18,7 @@ class StreamConnectSender(SAMSender):
         msg += ' DESTINATION=%s' % destination
         msg += ' SILENT=false'
         msg += '\n'
-        self.transport.write(msg)
+        self.transport.write(msg.encode('utf-8'))
 
 
 class StreamConnectReceiver(SAMReceiver):
@@ -82,7 +82,7 @@ class StreamForwardSender(SAMSender):
             msg += ' HOST=%s' % host
         msg += ' SILENT=false'
         msg += '\n'
-        self.transport.write(msg)
+        self.transport.write(msg.encode('utf-8'))
 
 
 class StreamForwardReceiver(SAMReceiver):

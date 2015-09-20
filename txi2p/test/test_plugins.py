@@ -2,6 +2,7 @@
 # See COPYING for details.
 
 from builtins import *
+import sys
 from twisted.internet import interfaces
 from twisted.python.versions import Version
 from twisted.test.proto_helpers import MemoryReactor
@@ -16,6 +17,8 @@ from txi2p.sam.endpoints import (SAMI2PStreamClientEndpoint,
 
 if twisted.version < Version('twisted', 14, 0, 0):
     skip = 'txi2p.plugins requires twisted 14.0 or newer'
+elif sys.version_info[0] >= 3:
+    skip = 'txi2p.plugins doesn\'t support Python 3 yet'
 else:
     skip = None
 

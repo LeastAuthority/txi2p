@@ -30,7 +30,7 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         proto.transport.clear()
         proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
-            'STREAM CONNECT ID=foo DESTINATION=bar SILENT=false\n',
+            b'STREAM CONNECT ID=foo DESTINATION=bar SILENT=false\n',
             proto.transport.value())
 
     def test_namingLookupAfterHello(self):
@@ -40,7 +40,7 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         proto.transport.clear()
         proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
-            'NAMING LOOKUP NAME=spam.i2p\n',
+            b'NAMING LOOKUP NAME=spam.i2p\n',
             proto.transport.value())
 
     def test_namingLookupReturnsError(self):
@@ -64,7 +64,7 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         proto.transport.clear()
         proto.dataReceived('NAMING REPLY RESULT=OK NAME=spam.i2p VALUE=bar\n')
         self.assertEquals(
-            'STREAM CONNECT ID=foo DESTINATION=bar SILENT=false\n',
+            b'STREAM CONNECT ID=foo DESTINATION=bar SILENT=false\n',
             proto.transport.value())
 
     def test_streamConnectReturnsError(self):
@@ -121,7 +121,7 @@ class TestStreamForwardProtocol(SAMProtocolTestMixin, unittest.TestCase):
         proto.transport.clear()
         proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
-            'STREAM FORWARD ID=foo PORT=1337 SILENT=false\n',
+            b'STREAM FORWARD ID=foo PORT=1337 SILENT=false\n',
             proto.transport.value())
 
     def test_streamForwardReturnsError(self):

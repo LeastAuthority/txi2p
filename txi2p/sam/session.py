@@ -22,7 +22,7 @@ class SessionCreateSender(SAMSender):
         for key in options:
             msg += ' %s=%s' % (key, options[key])
         msg += '\n'
-        self.transport.write(msg)
+        self.transport.write(msg.encode('utf-8'))
 
 
 class SessionCreateReceiver(SAMReceiver):
@@ -207,7 +207,7 @@ def getSession(nickname, samEndpoint=None, autoClose=False, **kwargs):
 
 class DestGenerateSender(SAMSender):
     def sendDestGenerate(self):
-        self.transport.write('DEST GENERATE\n')
+        self.transport.write(b'DEST GENERATE\n')
 
 
 class DestGenerateReceiver(SAMReceiver):

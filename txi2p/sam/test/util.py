@@ -24,8 +24,8 @@ class SAMProtocolTestMixin(object):
         fac.options = {}
         fac.protocol = protoClass
         fac.resultNotOK = Mock()
-        def raise_(ex):
-            raise ex
+        def raise_(reason):
+            raise reason.value
         fac.connectionFailed = lambda reason: raise_(reason)
         proto = fac.buildProtocol(None)
         transport = proto_helpers.StringTransport()
@@ -35,7 +35,7 @@ class SAMProtocolTestMixin(object):
 
     def test_initSendsHello(self):
         fac, proto = self.makeProto()
-        self.assertSubstring('HELLO VERSION', proto.transport.value())
+        self.assertSubstring('HELLO VERSION', str(proto.transport.value()))
 
     def test_helloReturnsError(self):
         fac, proto = self.makeProto()
