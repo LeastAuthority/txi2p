@@ -40,7 +40,7 @@ class SAMProtocolTestMixin(object):
     def test_helloReturnsError(self):
         fac, proto = self.makeProto()
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=I2P_ERROR MESSAGE="foo bar baz"\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=I2P_ERROR MESSAGE="foo bar baz"\n')
         fac.resultNotOK.assert_called_with('I2P_ERROR', 'foo bar baz')
 
 

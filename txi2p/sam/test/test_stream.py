@@ -28,7 +28,7 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.session.id = 'foo'
         fac.dest = 'bar'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
             b'STREAM CONNECT ID=foo DESTINATION=bar SILENT=false\n',
             proto.transport.value())
@@ -38,7 +38,7 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.dest = None
         fac.host = 'spam.i2p'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
             b'NAMING LOOKUP NAME=spam.i2p\n',
             proto.transport.value())
@@ -48,9 +48,9 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.dest = None
         fac.host = 'spam.i2p'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('NAMING REPLY RESULT=KEY_NOT_FOUND NAME=spam.i2p MESSAGE="foo bar baz"\n')
+        proto.dataReceived(b'NAMING REPLY RESULT=KEY_NOT_FOUND NAME=spam.i2p MESSAGE="foo bar baz"\n')
         fac.resultNotOK.assert_called_with('KEY_NOT_FOUND', 'foo bar baz')
 
     def test_streamConnectAfterNamingLookup(self):
@@ -60,9 +60,9 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.dest = None
         fac.host = 'spam.i2p'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('NAMING REPLY RESULT=OK NAME=spam.i2p VALUE=bar\n')
+        proto.dataReceived(b'NAMING REPLY RESULT=OK NAME=spam.i2p VALUE=bar\n')
         self.assertEquals(
             b'STREAM CONNECT ID=foo DESTINATION=bar SILENT=false\n',
             proto.transport.value())
@@ -73,9 +73,9 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.session.id = 'foo'
         fac.dest = 'bar'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('STREAM STATUS RESULT=I2P_ERROR MESSAGE="foo bar baz"\n')
+        proto.dataReceived(b'STREAM STATUS RESULT=I2P_ERROR MESSAGE="foo bar baz"\n')
         fac.resultNotOK.assert_called_with('I2P_ERROR', 'foo bar baz')
 
     def test_streamConnectionEstablishedAfterStreamConnect(self):
@@ -85,9 +85,9 @@ class TestStreamConnectProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.session.id = 'foo'
         fac.dest = 'bar'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('STREAM STATUS RESULT=OK\n')
+        proto.dataReceived(b'STREAM STATUS RESULT=OK\n')
         fac.streamConnectionEstablished.assert_called_with(proto.receiver)
 
 
@@ -103,7 +103,7 @@ class TestStreamConnectFactory(SAMFactoryTestMixin, unittest.TestCase):
         # Shortcut to end of SAM stream connect protocol
         proto.receiver.currentRule = 'State_connect'
         proto._parser._setupInterp()
-        proto.dataReceived('STREAM STATUS RESULT=OK\n')
+        proto.dataReceived(b'STREAM STATUS RESULT=OK\n')
         session.addStream.assert_called_with(proto.receiver)
         streamProto = self.successResultOf(fac.deferred)
         self.assertEqual(proto.receiver.wrappedProto, streamProto)
@@ -119,7 +119,7 @@ class TestStreamForwardProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.session.id = 'foo'
         fac.forwardPort = 1337
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
             b'STREAM FORWARD ID=foo PORT=1337 SILENT=false\n',
             proto.transport.value())
@@ -130,9 +130,9 @@ class TestStreamForwardProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.session.id = 'foo'
         fac.forwardPort = 1337
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('STREAM STATUS RESULT=I2P_ERROR MESSAGE="foo bar baz"\n')
+        proto.dataReceived(b'STREAM STATUS RESULT=I2P_ERROR MESSAGE="foo bar baz"\n')
         fac.resultNotOK.assert_called_with('I2P_ERROR', 'foo bar baz')
 
     def test_streamForwardEstablishedAfterStreamForward(self):
@@ -142,9 +142,9 @@ class TestStreamForwardProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.session.id = 'foo'
         fac.forwardPort = 1337
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('STREAM STATUS RESULT=OK\n')
+        proto.dataReceived(b'STREAM STATUS RESULT=OK\n')
         fac.streamForwardEstablished.assert_called_with(proto.receiver)
 
 
@@ -159,7 +159,7 @@ class TestStreamForwardFactory(SAMFactoryTestMixin, unittest.TestCase):
         # Shortcut to end of SAM stream forward protocol
         proto.receiver.currentRule = 'State_forward'
         proto._parser._setupInterp()
-        proto.dataReceived('STREAM STATUS RESULT=OK\n')
+        proto.dataReceived(b'STREAM STATUS RESULT=OK\n')
         session.addStream.assert_called_with(proto.receiver)
         streamProto = self.successResultOf(fac.deferred)
         self.assertEqual(proto.receiver, streamProto)

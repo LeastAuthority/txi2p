@@ -28,7 +28,7 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac, proto = self.makeProto()
         fac.style = 'STREAM'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
             b'SESSION CREATE STYLE=STREAM ID=foo DESTINATION=TRANSIENT\n',
             proto.transport.value())
@@ -38,7 +38,7 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.nickname = None
         fac.style = 'STREAM'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
             'SESSION CREATE STYLE=STREAM ID=txi2p-%s DESTINATION=TRANSIENT\n' % os.getpid(),
             proto.transport.value().decode('utf-8'))
@@ -48,7 +48,7 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.style = 'STREAM'
         fac.options['bar'] = 'baz'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(
             b'SESSION CREATE STYLE=STREAM ID=foo DESTINATION=TRANSIENT bar=baz\n',
             proto.transport.value())
@@ -57,18 +57,18 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac, proto = self.makeProto()
         fac.style = 'STREAM'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('SESSION STATUS RESULT=I2P_ERROR MESSAGE="foo bar baz"\n')
+        proto.dataReceived(b'SESSION STATUS RESULT=I2P_ERROR MESSAGE="foo bar baz"\n')
         fac.resultNotOK.assert_called_with('I2P_ERROR', 'foo bar baz')
 
     def test_namingLookupAfterSessionCreate(self):
         fac, proto = self.makeProto()
         fac.style = 'STREAM'
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('SESSION STATUS RESULT=OK DESTINATION=%s\n' % TEST_B64)
+        proto.dataReceived(('SESSION STATUS RESULT=OK DESTINATION=%s\n' % TEST_B64).encode('utf-8'))
         self.assertEquals(
             b'NAMING LOOKUP NAME=ME\n',
             proto.transport.value())
@@ -78,11 +78,11 @@ class TestSessionCreateProtocol(SAMProtocolTestMixin, unittest.TestCase):
         fac.style = 'STREAM'
         fac.sessionCreated = Mock()
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('SESSION STATUS RESULT=OK DESTINATION=%s\n' % TEST_B64)
+        proto.dataReceived(('SESSION STATUS RESULT=OK DESTINATION=%s\n' % TEST_B64).encode('utf-8'))
         proto.transport.clear()
-        proto.dataReceived('NAMING REPLY RESULT=OK NAME=ME VALUE=%s\n' % TEST_B64)
+        proto.dataReceived(('NAMING REPLY RESULT=OK NAME=ME VALUE=%s\n' % TEST_B64).encode('utf-8'))
         fac.sessionCreated.assert_called_with(proto.receiver, TEST_B64)
 
 
@@ -127,7 +127,7 @@ class TestSessionCreateFactory(SAMFactoryTestMixin, unittest.TestCase):
         # Shortcut to end of SAM session create protocol
         proto.receiver.currentRule = 'State_naming'
         proto._parser._setupInterp()
-        proto.dataReceived('NAMING REPLY RESULT=OK NAME=ME VALUE=%s\n' % TEST_B64)
+        proto.dataReceived(('NAMING REPLY RESULT=OK NAME=ME VALUE=%s\n' % TEST_B64).encode('utf-8'))
         s = self.successResultOf(fac.deferred)
         self.assertEqual(('3.1', 'STREAM', 'foo', proto.receiver, TEST_B64), s)
     test_sessionCreated.skip = skipSRO
@@ -141,7 +141,7 @@ class TestSessionCreateFactory(SAMFactoryTestMixin, unittest.TestCase):
         # Shortcut to end of SAM session create protocol
         proto.receiver.currentRule = 'State_naming'
         proto._parser._setupInterp()
-        proto.dataReceived('NAMING REPLY RESULT=OK NAME=ME VALUE=%s\n' % TEST_B64)
+        proto.dataReceived(('NAMING REPLY RESULT=OK NAME=ME VALUE=%s\n' % TEST_B64).encode('utf-8'))
         f = open(tmp, 'r')
         privKey = f.read()
         f.close()
@@ -254,16 +254,16 @@ class TestDestGenerateProtocol(SAMProtocolTestMixin, unittest.TestCase):
     def test_destGenerateAfterHello(self):
         fac, proto = self.makeProto()
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         self.assertEquals(b'DEST GENERATE\n', proto.transport.value())
 
     def test_destGenerated(self):
         fac, proto = self.makeProto()
         fac.destGenerated = Mock()
         proto.transport.clear()
-        proto.dataReceived('HELLO REPLY RESULT=OK VERSION=3.1\n')
+        proto.dataReceived(b'HELLO REPLY RESULT=OK VERSION=3.1\n')
         proto.transport.clear()
-        proto.dataReceived('DEST REPLY PUB=%s PRIV=%s\n' % (TEST_B64, 'TEST_PRIV'))
+        proto.dataReceived(('DEST REPLY PUB=%s PRIV=%s\n' % (TEST_B64, 'TEST_PRIV')).encode('utf-8'))
         fac.destGenerated.assert_called_with(TEST_B64, 'TEST_PRIV')
 
 
@@ -278,7 +278,7 @@ class TestDestGenerateFactory(SAMFactoryTestMixin, unittest.TestCase):
         # Shortcut to end of SAM dest generate protocol
         proto.receiver.currentRule = 'State_dest'
         proto._parser._setupInterp()
-        proto.dataReceived('DEST REPLY PUB=%s PRIV=%s\n' % (TEST_B64, 'TEST_PRIV'))
+        proto.dataReceived(('DEST REPLY PUB=%s PRIV=%s\n' % (TEST_B64, 'TEST_PRIV')).encode('utf-8'))
         s = self.successResultOf(fac.deferred)
         self.assertEqual(I2PAddress(TEST_B64), s)
         os.remove(tmp)
@@ -291,7 +291,7 @@ class TestDestGenerateFactory(SAMFactoryTestMixin, unittest.TestCase):
         # Shortcut to end of SAM dest generate protocol
         proto.receiver.currentRule = 'State_dest'
         proto._parser._setupInterp()
-        proto.dataReceived('DEST REPLY PUB=%s PRIV=%s\n' % (TEST_B64, 'TEST_PRIV'))
+        proto.dataReceived(('DEST REPLY PUB=%s PRIV=%s\n' % (TEST_B64, 'TEST_PRIV')).encode('utf-8'))
         f = open(tmp, 'r')
         privKey = f.read()
         f.close()
@@ -308,7 +308,7 @@ class TestDestGenerateFactory(SAMFactoryTestMixin, unittest.TestCase):
         # Shortcut to end of SAM dest generate protocol
         proto.receiver.currentRule = 'State_dest'
         proto._parser._setupInterp()
-        proto.dataReceived('DEST REPLY PUB=%s PRIV=%s\n' % (TEST_B64, 'TEST_PRIV'))
+        proto.dataReceived(('DEST REPLY PUB=%s PRIV=%s\n' % (TEST_B64, 'TEST_PRIV')).encode('utf-8'))
         self.assertIsInstance(self.failureResultOf(fac.deferred).value, ValueError)
         os.remove(tmp)
     test_destGenerated_keyfileExists.skip = skipSRO

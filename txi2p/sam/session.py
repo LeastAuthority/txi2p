@@ -3,14 +3,13 @@
 
 from builtins import *
 import os
-from parsley import makeProtocol
 from twisted.internet import defer, error
 from twisted.python import failure, log
 
 from txi2p import grammar
 from txi2p.address import I2PAddress
 from txi2p.sam import constants as c
-from txi2p.sam.base import SAMSender, SAMReceiver, SAMFactory
+from txi2p.sam.base import SAMSender, SAMReceiver, SAMFactory, makeProtocol
 
 
 class SessionCreateSender(SAMSender):

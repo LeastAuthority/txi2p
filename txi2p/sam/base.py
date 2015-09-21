@@ -2,6 +2,9 @@
 # See COPYING for details.
 
 from builtins import *
+import functools
+from ometa.grammar import OMeta
+from ometa.protocol import ParserProtocol
 from twisted.internet.interfaces import IListeningPort, IProtocolFactory
 from twisted.internet.protocol import ClientFactory
 from twisted.python.failure import Failure
@@ -70,6 +73,54 @@ class SAMReceiver(object):
             self.factory.resultNotOK(result, message)
             return
         self.postLookup(value)
+
+
+class TwistedParserProtocol(ParserProtocol):
+    def dataReceived(self, data):
+        """
+        Receive and parse some data.
+
+        :param data: A ``bytes`` from Twisted.
+        """
+
+        if self._disconnecting:
+            return
+
+        try:
+            self._parser.receive(data.decode('utf-8'))
+        except Exception:
+            self.connectionLost(Failure())
+            self.transport.abortConnection()
+            return
+
+
+
+def makeProtocol(source, senderFactory, receiverFactory, bindings=None,
+                 name='Grammar'):
+    """
+    Create a Twisted ``Protocol`` factory from a Parsley grammar.
+
+    Duplicated from ``parsley`` because Parsley expects a ``str`` but Twisted
+    provides a ``bytes``.
+
+    :param source: A grammar, as a string.
+    :param senderFactory: A one-argument callable that takes a twisted
+        ``Transport`` and returns a :ref:`sender <senders>`.
+    :param receiverFactory: A one-argument callable that takes the sender
+        returned by the ``senderFactory`` and returns a :ref:`receiver
+        <receivers>`.
+    :param bindings: A mapping of variable names to objects which will be
+        accessible from python code in the grammar.
+    :param name: The name used for the generated grammar class.
+    :returns: A nullary callable which will return an instance of
+        :class:`~.ParserProtocol`.
+    """
+
+    if bindings is None:
+        bindings = {}
+    grammar = OMeta(source).parseGrammar(name)
+    return functools.partial(
+        TwistedParserProtocol, grammar, senderFactory, receiverFactory, bindings)
 
 
 class SAMFactory(ClientFactory):
